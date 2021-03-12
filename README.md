@@ -130,7 +130,7 @@ found on the `master` branch).
 
 ## Notes
 
-3. These windows are exact, and so are incredibly memory-intensive for small
+1. These windows are exact, and so are incredibly memory-intensive for small
    scaling values and large resolutions -- creating windows with `scaling=.01`
    and `img_res=(2048, 2600)`, for example, can take 15 minutes to an hour
    (depending on your machine) and more than 100 GB of RAM, and a single
