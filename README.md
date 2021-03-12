@@ -159,6 +159,12 @@ found on the `master` branch).
 3. These windows have only been used on the output of plenoptic's steerable
    pyramid (as described above) and images. Any other use-case will probably
    require some modification.
+4. `PoolingWindows` has a variety of helper methods to help understand what it's
+   doing, including several that create plots. For example `pw.plot_windows()`
+   will create contour plots showing the windows at each eccentricity and a
+   small number of angles, and `pw.plot_window_areas()` will show the area of
+   the windows (in pixels or degrees) in each eccentricity ring. They should all
+   have complete docstrings, so you are encouraged to explore.
 
 ## Code structure
 
