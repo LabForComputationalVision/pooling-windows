@@ -59,7 +59,8 @@ img = torch.from_numpy(plt.imread('path/to/image.png').astype(np.float32)) / 255
   operate on 4d images as input: batch by channel by height by width. The batch
   dimension is used for multiple images and channel for RGB(A) (or different
   channels in convolution layers). `PoolingWindows` supports both single- and
-  multi-batch and channel inputs.
+  multi-batch and channel inputs, operating independently along batch and
+  channel dimensions.
   
 ``` python
 # if this is a grayscale image, it will be unsqueezed twice; if it's RGB, it will be unsqueezed once.
