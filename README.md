@@ -165,6 +165,12 @@ found on the `master` branch).
    small number of angles, and `pw.plot_window_areas()` will show the area of
    the windows (in pixels or degrees) in each eccentricity ring. They should all
    have complete docstrings, so you are encouraged to explore.
+5. The code in this repo was originally part of
+   [plenoptic](https://github.com/LabForComputationalVision/plenoptic/) but
+   removed in March 2021. In moving over the code, I broke the git history; if,
+   for some reason, you wish to see the history or git blame, [this plenoptic
+   commit](https://github.com/LabForComputationalVision/plenoptic/tree/fb1c4d29c645c9a054baa021c7ffd07609b181d4)
+   contains all the code before transferring it to this repo.
 
 ## Code structure
 
