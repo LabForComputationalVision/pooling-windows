@@ -401,14 +401,14 @@ def calc_windows_eccentricity(ecc_type, n_windows, window_spacing, min_ecc=.5,
         ecc = [min_ecc * np.exp(window_spacing * (i+1)) for i in np.arange(np.ceil(n_windows))]
     elif ecc_type == 'min':
         if std_dev is None:
-            ecc = [(np.exp(-window_spacing*(1+transition_region_width)) * min_ecc *
+            ecc = [(np.exp(-window_spacing*(1+transition_region_width) / 2) * min_ecc *
                     np.exp(window_spacing * (i+1))) for i in np.arange(np.ceil(n_windows))]
         else:
             ecc = [(np.exp(-3*std_dev*window_spacing) * min_ecc *
                     np.exp(window_spacing * (i+1))) for i in np.arange(np.ceil(n_windows))]
     elif ecc_type == 'max':
         if std_dev is None:
-            ecc = [(np.exp(window_spacing*(1+transition_region_width)) * min_ecc *
+            ecc = [(np.exp(window_spacing*(1+transition_region_width) / 2) * min_ecc *
                     np.exp(window_spacing * (i+1))) for i in np.arange(np.ceil(n_windows))]
         else:
             ecc = [(np.exp(3*std_dev*window_spacing) * min_ecc *
