@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          pip install git+https://github.com/LabForComputationalVision/plenoptic.git@binder
+          pip install git+https://github.com/LabForComputationalVision/plenoptic.git@master
           pip install pytest
       - name: Run tests with pytest
         run: 'pytest tests/test_pooling.py'
