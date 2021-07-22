@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 import os.path as op
 from . import utils
 from . import pooling
+# this is a drop-in replacement for einsum that is much more efficient.
+import opt_einsum as oe
 
 
 class PoolingWindows(nn.Module):
@@ -557,15 +559,16 @@ class PoolingWindows(nn.Module):
 
         """
         if isinstance(x, dict):
-            pooled_x = dict((k, torch.einsum('bchw,ahw,ehw->bcea',
-                                             [v.to(self.angle_windows[0].device),
-                                              self.angle_windows[k[0]],
-                                              self.ecc_windows[k[0]]]).flatten(2, 3))
+            pooled_x = dict((k, oe.contract('bchw,ahw,ehw->bcea',
+                                            v, self.angle_windows[k[0]],
+                                            self.ecc_windows[k[0]],
+                                            backend='torch').flatten(2, 3))
                             for k, v in x.items())
         else:
-            pooled_x = (torch.einsum('bchw,ahw,ehw->bcea', [x.to(self.angle_windows[0].device),
-                                                            self.angle_windows[idx],
-                                                            self.ecc_windows[idx]]).flatten(2, 3))
+            pooled_x = oe.contract('bchw,ahw,ehw->bcea', x,
+                                   self.angle_windows[idx],
+                                   self.ecc_windows[idx],
+                                   backend='torch').flatten(2, 3)
         return pooled_x
 
     def window(self, x, idx=0):
@@ -611,18 +614,19 @@ class PoolingWindows(nn.Module):
             # one way to make this more general: figure out the size of
             # the tensors in x and in self.windows, and intelligently
             # lookup which should be used.
-            return dict((k, torch.einsum('bchw,ahw,ehw->bceahw',
-                                         [v.to(self.angle_windows[0].device),
-                                          self.angle_windows[k[0]],
-                                          self.ecc_windows[k[0]]]).flatten(2, 3))
+            return dict((k, oe.contract('bchw,ahw,ehw->bceahw',
+                                        v,
+                                        self.angle_windows[k[0]],
+                                        self.ecc_windows[k[0]],
+                                        backend='torch').flatten(2, 3))
                         for k, v in x.items())
         else:
             if x.ndimension() != 4:
                 raise Exception("PoolingWindows input must be 4d tensors or a dict of 4d tensors!"
                                 " Unsqueeze until this is true!")
-            return torch.einsum('bchw,ahw,ehw->bceahw', [x.to(self.angle_windows[0].device),
-                                                         self.angle_windows[idx],
-                                                         self.ecc_windows[idx]]).flatten(2, 3)
+            return oe.contract('bchw,ahw,ehw->bceahw', x,
+                               self.angle_windows[idx],
+                               self.ecc_windows[idx], backend='torch').flatten(2, 3)
 
     def pool(self, windowed_x, idx=0):
         r"""Pool the windowed input
@@ -726,10 +730,11 @@ class PoolingWindows(nn.Module):
                     window_key = 0
                 v = v.reshape((*v.shape[:2], self.ecc_windows[window_key].shape[0],
                                self.angle_windows[window_key].shape[0]))
-                tmp[k] = torch.einsum('bcea,ahw,ehw->bchw',
-                                      [v.to(self.angle_windows[0].device),
-                                       self.angle_windows[window_key],
-                                       self.ecc_windows[window_key] / self.norm_factor[window_key]])
+                tmp[k] = oe.contract('bcea,ahw,ehw->bchw',
+                                     v,
+                                     self.angle_windows[window_key],
+                                     self.ecc_windows[window_key] / self.norm_factor[window_key],
+                                     backend='torch')
             return tmp
         else:
             if pooled_x.ndimension() != 3:
@@ -737,9 +742,10 @@ class PoolingWindows(nn.Module):
                                 " Squeeze until this is true!")
             pooled_x = pooled_x.reshape((*pooled_x.shape[:2], self.ecc_windows[idx].shape[0],
                                          self.n_polar_windows))
-            return torch.einsum('bcea,ahw,ehw->bchw', [pooled_x.to(self.angle_windows[0].device),
-                                                       self.angle_windows[idx], self.ecc_windows[idx] /
-                                                       self.norm_factor[idx]])
+            return oe.contract('bcea,ahw,ehw->bchw', pooled_x,
+                               self.angle_windows[idx],
+                               self.ecc_windows[idx] / self.norm_factor[idx],
+                               backend='torch')
 
     def plot_windows(self, ax=None, contour_levels=None, colors='r',
                      subset=True, windows_scale=0, **kwargs):
