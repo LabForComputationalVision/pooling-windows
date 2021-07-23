@@ -43,14 +43,14 @@ class TestPooling(object):
         assert pooling.pooling.calc_angular_n_windows(2) == np.pi
         with pytest.raises(Exception):
             pooling.pooling.calc_eccentricity_window_spacing()
-        assert pooling.pooling.calc_eccentricity_window_spacing(n_windows=4) == 0.8502993454155389
-        assert pooling.pooling.calc_eccentricity_window_spacing(scaling=.87) == 0.8446653390527211
-        assert pooling.pooling.calc_eccentricity_window_spacing(5, 10, scaling=.87) == 0.8446653390527211
-        assert pooling.pooling.calc_eccentricity_window_spacing(5, 10, n_windows=4) == 0.1732867951399864
-        assert pooling.pooling.calc_eccentricity_n_windows(0.8502993454155389) == 4
-        assert pooling.pooling.calc_eccentricity_n_windows(0.1732867951399864, 5, 10) == 4
-        assert pooling.pooling.calc_scaling(4) == 0.8761474337786708
-        assert pooling.pooling.calc_scaling(4, 5, 10) == 0.17350368946058647
+        assert np.allclose(pooling.pooling.calc_eccentricity_window_spacing(n_windows=4), 0.8502993454155389)
+        assert np.allclose(pooling.pooling.calc_eccentricity_window_spacing(scaling=.87), 0.8446653390527211)
+        assert np.allclose(pooling.pooling.calc_eccentricity_window_spacing(5, 10, scaling=.87), 0.8446653390527211)
+        assert np.allclose(pooling.pooling.calc_eccentricity_window_spacing(5, 10, n_windows=4), 0.1732867951399864)
+        assert np.allclose(pooling.pooling.calc_eccentricity_n_windows(0.8502993454155389), 4)
+        assert np.allclose(pooling.pooling.calc_eccentricity_n_windows(0.1732867951399864, 5, 10), 4)
+        assert np.allclose(pooling.pooling.calc_scaling(4), 0.8761474337786708)
+        assert np.allclose(pooling.pooling.calc_scaling(4, 5, 10), 0.17350368946058647)
         assert np.isinf(pooling.pooling.calc_scaling(4, 0))
 
     @pytest.mark.parametrize('num_scales', [1, 3])
