@@ -235,6 +235,7 @@ class PoolingWindows(nn.Module):
         self.window_type = window_type
         self.angle_windows = {}
         self.ecc_windows = {}
+        self._contract_expr = {}
         self.norm_factor = {}
         if window_type == 'cosine':
             assert transition_region_width is not None, "cosine windows need transition region widths!"
@@ -308,6 +309,13 @@ class PoolingWindows(nn.Module):
                     torch.save({'angle': angle_windows, 'ecc': ecc_windows}, self.cache_paths[-1])
             self.angle_windows[i] = angle_windows
             self.ecc_windows[i] = ecc_windows
+            # cache this calculation so the forward() call will be a bit
+            # faster. we don't know how many elements we'll have in the batch
+            # or channel dimension, but there would need to be a *huge* amount
+            # of them to change the most efficient way of doing this.
+            self._contract_expr[i] = oe.contract_expression('bchw,ahw,ehw->bcea',
+                                                            (1, 5, *angle_windows.shape[1:]),
+                                                            angle_windows.shape, ecc_windows.shape)
             # if we have the eccentricity one std dev away from center, use
             # that.
             try:
@@ -559,16 +567,14 @@ class PoolingWindows(nn.Module):
 
         """
         if isinstance(x, dict):
-            pooled_x = dict((k, oe.contract('bchw,ahw,ehw->bcea',
-                                            v, self.angle_windows[k[0]],
-                                            self.ecc_windows[k[0]],
-                                            backend='torch').flatten(2, 3))
+            pooled_x = dict((k, self._contract_expr[k[0]](v, self.angle_windows[k[0]],
+                                                          self.ecc_windows[k[0]],
+                                                          backend='torch').flatten(2, 3))
                             for k, v in x.items())
         else:
-            pooled_x = oe.contract('bchw,ahw,ehw->bcea', x,
-                                   self.angle_windows[idx],
-                                   self.ecc_windows[idx],
-                                   backend='torch').flatten(2, 3)
+            pooled_x = self._contract_expr[idx](x, self.angle_windows[idx],
+                                                self.ecc_windows[idx],
+                                                backend='torch').flatten(2, 3)
         return pooled_x
 
     def window(self, x, idx=0):
