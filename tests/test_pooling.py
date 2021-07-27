@@ -116,3 +116,15 @@ class TestPooling(object):
         im = torch.rand((1, 1, 256, 256), dtype=torch.float32)
         pw = pooling.PoolingWindows(.5, im.shape[2:])
         pw.pool(pw.window(im))
+
+    @pytest.mark.parametrize('num_scales', [1, 3])
+    @pytest.mark.parametrize('input_fmt', ['dict', 'tensor'])
+    def test_reweighting(self, num_scales, input_fmt):
+        pw = pooling.PoolingWindows(.5, (256, 256), num_scales=num_scales)
+        im = {(i,): torch.rand((1, 1, 256//2**i, 256//2**i), dtype=torch.float32)
+              for i in range(num_scales)}
+        if input_fmt == 'dict':
+            pw(im, weights=torch.ones(num_scales, 1, 1, 1, 1))
+        elif input_fmt == 'tensor':
+            for i in range(num_scales):
+                pw(im[(i,)], idx=i, weights=torch.ones(num_scales, 1, 1, 1, 1))
