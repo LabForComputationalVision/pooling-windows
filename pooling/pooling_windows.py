@@ -524,7 +524,7 @@ class PoolingWindows(nn.Module):
         slice_vals = (scaled_window_res - scaled_img_res) / 2
         return [int(np.floor(slice_vals)), -int(np.ceil(slice_vals))]
 
-    def forward(self, x, idx=0):
+    def forward(self, x, idx=0, weights=None):
         r"""Window and pool the input
 
         We take an input, either a 4d tensor or a dictionary of 4d
@@ -552,6 +552,10 @@ class PoolingWindows(nn.Module):
         idx : int, optional
             Which entry in the ``windows`` list to use. Only used if
             ``x`` is a tensor
+        weights : torch.Tensor or None, optional
+            If not None, should be a tensor of shape (scales, batch, channel,
+            eccentricity, angle), this allows us to reweight the pooled input
+            across scales, eccentricity, and angle. If None, don't reweight.
 
         Returns
         -------
@@ -566,15 +570,19 @@ class PoolingWindows(nn.Module):
             image
 
         """
+        if weights is None:
+            weights = torch.ones(self.num_scales, device=x.device, dtype=x.dtype)
         if isinstance(x, dict):
-            pooled_x = dict((k, self._contract_expr[k[0]](v, self.angle_windows[k[0]],
-                                                          self.ecc_windows[k[0]],
-                                                          backend='torch').flatten(2, 3))
+            pooled_x = dict((k, (weights[k[0]] *
+                                 self._contract_expr[k[0]](v, self.angle_windows[k[0]],
+                                                           self.ecc_windows[k[0]],
+                                                           backend='torch')).flatten(2, 3))
                             for k, v in x.items())
         else:
             pooled_x = self._contract_expr[idx](x, self.angle_windows[idx],
                                                 self.ecc_windows[idx],
-                                                backend='torch').flatten(2, 3)
+                                                backend='torch')
+            pooled_x = (weights[idx] * pooled_x).flatten(2, 3)
         return pooled_x
 
     def window(self, x, idx=0):
