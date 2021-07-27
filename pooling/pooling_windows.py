@@ -571,7 +571,9 @@ class PoolingWindows(nn.Module):
 
         """
         if weights is None:
-            weights = torch.ones(self.num_scales, device=x.device, dtype=x.dtype)
+            weights = torch.ones(self.num_scales,
+                                 device=self.angle_windows[0].device,
+                                 dtype=self.angle_windows[0].dtype)
         if isinstance(x, dict):
             pooled_x = dict((k, (weights[k[0]] *
                                  self._contract_expr[k[0]](v, self.angle_windows[k[0]],
