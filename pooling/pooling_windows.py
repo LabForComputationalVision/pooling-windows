@@ -307,12 +307,21 @@ class PoolingWindows(nn.Module):
                 if cache_dir is not None:
                     warnings.warn("Saving windows to cache: %s" % self.cache_paths[-1])
                     torch.save({'angle': angle_windows, 'ecc': ecc_windows}, self.cache_paths[-1])
+            # the observer model requires every scale has the same number of
+            # eccentricity windows, so we add empty windows to make sure that's
+            # the case. this is only an issue with coarse scales (or
+            # equivalently, small resolutions) and smaller scales
+            if ecc_windows.shape[0] < self.central_eccentricity_degrees.shape[0]:
+                n_extra_wdws = self.central_eccentricity_degrees.shape[0] - ecc_windows.shape[0]
+                ecc_windows = torch.cat([ecc_windows,
+                                         torch.zeros_like(ecc_windows[:n_extra_wdws])])
             self.angle_windows[i] = angle_windows
             self.ecc_windows[i] = ecc_windows
             # cache this calculation so the forward() call will be a bit
             # faster. we don't know how many elements we'll have in the batch
-            # or channel dimension, but there would need to be a *huge* amount
-            # of them to change the most efficient way of doing this.
+            # or channel dimension (so these are just dummy numbers), but there
+            # would need to be a *huge* amount of them to change the most
+            # efficient way of doing this.
             self._contract_expr[i] = oe.contract_expression('bchw,ahw,ehw->bcea',
                                                             (1, 5, *angle_windows.shape[1:]),
                                                             angle_windows.shape, ecc_windows.shape)
