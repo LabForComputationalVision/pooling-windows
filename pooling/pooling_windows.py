@@ -851,6 +851,87 @@ class PoolingWindows(nn.Module):
                 ax.contour(utils.to_numpy(w), contour_levels, colors=colors, **kwargs)
         return ax
 
+    def plot_window_values(self, im=None, ax=None, subset=True,
+                           windows_scale=0, **kwargs):
+        r"""Plot the windowed average values.
+
+        This plots the average values of an image, as computed by these
+        windows, and plots them using contourf as an RGB triple. We plot these
+        within the window contours using self.window_intersecting_amplitude, so
+        that if you call self.plot_windows with contour_levels=None, they will
+        outline these regions.
+
+        Any additional kwargs are passed to ax.contourf
+
+        WARNING: This method requires the additional package plenoptic, which
+        can be found at https://github.com/LabForComputationalVision/plenoptic/
+
+        Parameters
+        ----------
+        im : torch.Tensor or None, optional
+            The image whose average values we plot within the windows. If None,
+            we plot random gray values instead.
+        ax : matplotlib.pyplot.axis or None, optional
+            The axis to plot the windows on. If None, will create a new
+            figure with 1 axis
+        subset : bool, optional
+            If True, will only plot four of the angle window
+            slices. This is to save time and memory. If False, will plot
+            all of them
+        windows_scale : int, optional
+            Which scale of the windows to use. windows is a list with
+            different scales, so this specifies which one to use
+
+        Returns
+        -------
+        ax : matplotlib.pyplot.axis
+            The axis with the windows
+
+        """
+        try:
+            import plenoptic as po
+        except ModuleNotFoundError:
+            raise Exception("plenoptic not found, cannot create this plot without access to its imshow! "
+                            "Go to https://github.com/LabForComputationalVision/plenoptic/ and follow its install instructions.")
+        if ax is None:
+            dummy_data = torch.ones(1, 1, *self.img_res)
+            fig = po.imshow(dummy_data, cmap='gray_r', title=None)
+            ax = fig.axes[0]
+        contour_level = self.window_intersecting_amplitude
+        # attempt to not have all the windows in memory at once...
+        angle_windows = self.angle_windows[windows_scale]
+        ecc_windows = self.ecc_windows[windows_scale] / self.norm_factor[windows_scale]
+        if im is not None:
+            max_val = self.forward(im).max()
+            im = im.squeeze()
+            if im.ndim > 2:
+                raise Exception("im can only have one batch and channel!")
+        if subset:
+            angle_windows = angle_windows[:4]
+        for a in angle_windows:
+            windows = torch.einsum('hw,ehw->ehw', [a, ecc_windows])
+            if im is not None:
+                # need to use the normalized ecc_windows here so that the max
+                # computed above using self.forward is actually the max
+                output = torch.einsum('hw,hw,ehw->e', [im, a, self.ecc_windows[windows_scale]])
+                colors = utils.to_numpy(output)
+            else:
+                colors = np.random.rand(windows.shape[0])
+            # and convert into grey RGB triples
+            colors = [(c, c, c) for c in colors]
+            for i, w in enumerate(windows):
+                try:
+                    # if this isn't true, then this window will be
+                    # plotted weird
+                    if not (w > contour_level).any():
+                        continue
+                except TypeError:
+                    # in this case, it's an int
+                    pass
+                ax.contourf(utils.to_numpy(w), [contour_level, 1],
+                            colors=[colors[i]], **kwargs)
+        return ax
+
     def plot_window_widths(self, units='degrees', scale_num=0, figsize=(5, 5), jitter=.25,
                            ax=None):
         r"""plot the widths of the windows, in degrees or pixels
