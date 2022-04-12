@@ -902,7 +902,6 @@ class PoolingWindows(nn.Module):
         angle_windows = self.angle_windows[windows_scale]
         ecc_windows = self.ecc_windows[windows_scale] / self.norm_factor[windows_scale]
         if im is not None:
-            max_val = self.forward(im).max()
             im = im.squeeze()
             if im.ndim > 2:
                 raise Exception("im can only have one batch and channel!")
@@ -911,10 +910,14 @@ class PoolingWindows(nn.Module):
         for a in angle_windows:
             windows = torch.einsum('hw,ehw->ehw', [a, ecc_windows])
             if im is not None:
-                # need to use the normalized ecc_windows here so that the max
-                # computed above using self.forward is actually the max
+                # if we use the windows to generate the color, the most obvious
+                # thing is that windows near the periphery have most of their mass
+                # off the image, and so windows get darker near the edge fo the
+                # image. this corrects for that
+                norm_windows = torch.einsum('hw,hw,ehw->e', [torch.ones_like(im), a,
+                                                             self.ecc_windows[windows_scale]])
                 output = torch.einsum('hw,hw,ehw->e', [im, a, self.ecc_windows[windows_scale]])
-                colors = utils.to_numpy(output)
+                colors = utils.to_numpy(output / norm_windows)
             else:
                 colors = np.random.rand(windows.shape[0])
             # and convert into grey RGB triples
