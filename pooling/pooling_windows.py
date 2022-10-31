@@ -200,7 +200,8 @@ class PoolingWindows(nn.Module):
         at each scale
     cache_dir : str or None
         If str, this is the directory where we cached / looked for
-        cached windows tensors
+        cached windows tensors. This directory must already exist, or we raise
+        a FileNotFoundError.
     cached_paths : list
         List of strings, one per scale, taht we either saved or loaded
         the cached windows tensors from

@@ -141,7 +141,8 @@ found on the `master` branch).
 4. Because creating the windows can take so long, we have a `cache_dir`
    argument: set this to a directory on your machine and the windows will be
    saved there during creation and, if the appropriate windows are found when
-   instantiating a new instance, they will loaded in.
+   instantiating a new instance, they will loaded in. If the directory does not
+   exist, we raise a `FileNotFoundError`.
 1. `PoolingWindows` supports multi-scale windows (by setting `num_scales`
    argument). To do this, we independently construct the windows at each scale
    (note this is different from [[1]](1#), which constructed the windows at the
