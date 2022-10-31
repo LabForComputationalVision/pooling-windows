@@ -258,6 +258,9 @@ class PoolingWindows(nn.Module):
             self.window_intersecting_amplitude = self.window_max_amplitude * np.exp(-.25/2)
         if cache_dir is not None:
             self.cache_dir = op.expanduser(cache_dir)
+            if not op.exists(self.cache_dir):
+                raise FileNotFoundError(f"{self.cache_dir} was specified as cache_dir, "
+                                        "but that directory does not exist!")
             cache_path_template = op.join(self.cache_dir, "scaling-{scaling}_size-{img_res}_"
                                           "e0-{min_eccentricity:.03f}_em-{max_eccentricity:.01f}_w"
                                           "-{window_width}_{window_type}.pt")

@@ -111,6 +111,12 @@ class TestPooling(object):
         pw = pooling.PoolingWindows(.8, im.shape[-2:], num_scales=2, cache_dir=tmp_path)
         pw = pooling.PoolingWindows(.8, im.shape[-2:], num_scales=2, cache_dir=tmp_path)
 
+    def test_PoolingWindows_cache_dne(self, tmp_path):
+        im = torch.rand((1, 1, 256, 256), dtype=torch.float32)
+        tmp_path = op.join(tmp_path, 'new_dir')
+        with pytest.raises(FileNotFoundError):
+            pooling.PoolingWindows(.8, im.shape[-2:], num_scales=2, cache_dir=tmp_path)
+
     def test_PoolingWindows_sep(self):
         # test the window and pool function separate of the forward function
         im = torch.rand((1, 1, 256, 256), dtype=torch.float32)
