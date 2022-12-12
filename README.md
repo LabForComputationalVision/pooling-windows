@@ -1,14 +1,14 @@
 # pooling-windows
 
-PyTorch implementation of pooling windows like those used in [Freeman and
-Simoncelli, 2011](#1).
+PyTorch implementation of pooling windows like those used in Freeman and
+Simoncelli, 2011[^1].
 
 [Matlab code](https://github.com/freeman-lab/metamers/) for these windows exist
 as part of Jeremy Freeman's repo for the original paper. This repo is not a
 direct port of that code, but a conceptual reimplementation, following the math
 outlined in the supplemental materials, and also includes a version using
 Gaussian windows. Note this means we do not test whether our outputs match the
-original implementation (and, as pointed out by [Wallis et al, 2011](#2), there
+original implementation (and, as pointed out by Wallis et al, 2019[^2], there
 is a minor bug in that code).
 
 The included Guassian windows overlap more than the original windows (which used
@@ -194,13 +194,11 @@ found on the `master` branch).
 
 ## References
 
-<a id="1">[1]</a> Freeman, J., & Simoncelli, E. P. (2011). Metamers of the
-ventral stream. Nature Neuroscience, 14(9), 1195–1201.
-http://dx.doi.org/10.1038/nn.2889.
+[^1] Freeman, J., & Simoncelli, E. P. (2011). Metamers of the ventral stream.
+Nature Neuroscience, 14(9), 1195–1201. http://dx.doi.org/10.1038/nn.2889.
 [reprint](https://www.cns.nyu.edu/pub/eero/freeman10-reprint.pdf)
 
-<a id="2">[2]</a> Wallis, T. S., Funke, C. M., Ecker, A. S., Gatys, L. A.,
-Wichmann, F. A., & Bethge, M. (2019). Image content is more important than
-bouma's law for scene metamers. eLife, 8(), .
-http://dx.doi.org/10.7554/elife.42512
+[^2] Wallis, T. S., Funke, C. M., Ecker, A. S., Gatys, L. A., Wichmann, F. A., &
+Bethge, M. (2019). Image content is more important than bouma's law for scene
+metamers. eLife, 8(), . http://dx.doi.org/10.7554/elife.42512
 
