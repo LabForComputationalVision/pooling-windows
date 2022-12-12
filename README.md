@@ -21,11 +21,11 @@ Gaussian and raised-cosine windows can be found at the top of
 
 ## Requirements
 
-This code works with python 3.6, 3.7, and 3.8. The packages required to use this
-code can be found in `requirements.txt`. In order to install them in your
-virtual environment of choice, run `pip install -r requirements.txt`; you will
-then be able to use the code here from within this directory (`pooling` is not
-itself installed, and thus will not be on your path). There is one function,
+This code works with python 3.7, 3.8, 3.9, and 3.10. The packages required to
+use this code can be found in `requirements.txt`. In order to install them in
+your virtual environment of choice, run `pip install -r requirements.txt`; you
+will then be able to use the code here from within this directory (`pooling` is
+not itself installed, and thus will not be on your path). There is one function,
 `PoolingWindows.plot_windows()`, which requires
 [plenoptic](https://github.com/LabForComputationalVision/plenoptic/) -- if you
 wish to use it, you must install that package as well (follow the instructions
