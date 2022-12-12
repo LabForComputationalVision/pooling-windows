@@ -194,11 +194,11 @@ found on the `master` branch).
 
 ## References
 
-[^1] Freeman, J., & Simoncelli, E. P. (2011). Metamers of the ventral stream.
+[^1]: Freeman, J., & Simoncelli, E. P. (2011). Metamers of the ventral stream.
 Nature Neuroscience, 14(9), 1195–1201. http://dx.doi.org/10.1038/nn.2889.
 [reprint](https://www.cns.nyu.edu/pub/eero/freeman10-reprint.pdf)
 
-[^2] Wallis, T. S., Funke, C. M., Ecker, A. S., Gatys, L. A., Wichmann, F. A., &
+[^2]: Wallis, T. S., Funke, C. M., Ecker, A. S., Gatys, L. A., Wichmann, F. A., &
 Bethge, M. (2019). Image content is more important than bouma's law for scene
 metamers. eLife, 8(), . http://dx.doi.org/10.7554/elife.42512
 
