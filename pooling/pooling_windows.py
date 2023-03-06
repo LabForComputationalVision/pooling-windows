@@ -1003,7 +1003,7 @@ class PoolingWindows(nn.Module):
         sizes = {'full': 5, 'half': 10, 'top': 15}
         for direc, height in itertools.product(['radial', 'angular'], ['top', 'half', 'full']):
             m, s, b = ax.stem(central_ecc+jitter_vals[direc], data[direc+"_"+height],
-                              colors[direc], colors[direc]+'.', label=direc+"_"+height,
+                              linefmt=colors[direc], markerfmt=colors[direc]+'.', label=direc+"_"+height,
                               use_line_collection=True)
             m.set(markersize=sizes[height])
         ax.set_ylabel('Window width (%s)' % units)
@@ -1069,7 +1069,8 @@ class PoolingWindows(nn.Module):
             fig = ax.figure
         sizes = {'full': 5, 'half': 10, 'top': 15}
         for height in ['top', 'half', 'full']:
-            m, s, b = ax.stem(central_ecc, data[height], 'C0', 'C0.', label=height,
+            m, s, b = ax.stem(central_ecc, data[height], linefmt='C0',
+                              markerfmt='C0.', label=height,
                               use_line_collection=True)
             m.set(markersize=sizes[height])
         ax.set_ylabel('Window area (%s)' % units)
