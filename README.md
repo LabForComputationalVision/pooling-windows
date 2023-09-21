@@ -14,9 +14,11 @@ is a minor bug in that code).
 The included Guassian windows overlap more than the original windows (which used
 a raised-cosine falloff), and thus give a smoother representation. They were
 created by William Broderick for his foveated metamer project ([VSS 2020
-poster](https://osf.io/aketq/)), and notably improved the quality of V1 and
-retinal metamers. A more detailed discussion of the differences between the
-Gaussian and raised-cosine windows can be found at the top of
+poster](https://osf.io/aketq/), [VSS 2023 poster](https://osf.io/8hdaz/),
+[preprint](https://www.biorxiv.org/content/10.1101/2023.05.18.541306)), and
+notably improved the quality of V1 and retinal metamers. A more detailed
+discussion of the differences between the Gaussian and raised-cosine windows can
+be found at the top of
 [pooling.py](https://github.com/LabForComputationalVision/pooling-windows/blob/main/pooling/pooling.py#L3).
 
 ## Requirements
