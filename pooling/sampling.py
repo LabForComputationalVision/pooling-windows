@@ -136,7 +136,7 @@ def plot_coeffs(coeffs, ncols=5, ax_size=(5, 5)):
     ylim += ylim/10
     fig, axes = plt.subplots(nrows, ncols, figsize=[i*j for i, j in zip(ax_size, [ncols, nrows])])
     for i, ax in enumerate(axes.flatten()):
-        ax.stem(coeffs[i], use_line_collection=True)
+        ax.stem(coeffs[i])
         ax.set_ylim((-ylim, ylim))
     return fig
 
@@ -192,7 +192,7 @@ def interpolation_plot(interpolated, residuals, pix=0, val=None, x=np.linspace(-
     if full is not None:
         axes[0].plot(x, full[:, pix], '--', zorder=0, label='actual')
         axes[0].legend()
-    axes[1].stem(x, residuals, use_line_collection=True)
+    axes[1].stem(x, residuals)
     axes[1].scatter(x[pix], residuals[pix], c='r', zorder=10)
     axes[0].set_title("Interpolated function centered at highlighted pixel")
     axes[1].set_title("Error for interpolation centered at highlighted pixel")
