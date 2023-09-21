@@ -1152,7 +1152,7 @@ class PoolingWindows(nn.Module):
         fig, axes = plt.subplots(2, 1, figsize=(5, 10),
                                  gridspec_kw={'hspace': .4})
         for i, (f, name) in enumerate(zip(funcs, ['L1-norm', 'Sum'])):
-            d = f(windows)
+            d = f(windows).numpy()
             # most of the time, self.central_eccentricity_degrees
             # and d will be same size, but sometimes they will not
             # not. this happens because central_eccentricity_degrees
@@ -1162,7 +1162,7 @@ class PoolingWindows(nn.Module):
             # those at the end, because they're off the image
             ecc = self.central_eccentricity_degrees[:d.shape[0]]
             axes[i].semilogx(ecc, d)
-            for j, dj in enumerate(d.transpose(0, 1)):
+            for j, dj in enumerate(d.transpose(1, 0)):
                 if i == 0:
                     label = angle_n[j]
                 else:
